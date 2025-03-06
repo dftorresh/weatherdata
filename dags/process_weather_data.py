@@ -3,6 +3,7 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from scripts.extract import extract_weather_data_into_bucket
+from scripts.transform import transform
 
 
 default_args = {
@@ -23,7 +24,15 @@ extract_task = PythonOperator(
     task_id="extract",
     python_callable=extract_weather_data_into_bucket,
     op_args=["5a38894979a32ef8c0ac8db6b3368d81", 5, -78, "metric", "minutely,hourly,daily,alerts", "airqualityproject28", "landing"],
+    provide_context=True,
     dag=dag
 )
 
-extract_task
+transform_task = PythonOperator(
+    task_id="transform",
+    python_callable=transform,
+    op_kwargs={"bucket_name": "airqualityproject28"},
+    provide_context=True,
+)
+
+extract_task >> transform_task
