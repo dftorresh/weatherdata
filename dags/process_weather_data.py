@@ -11,7 +11,7 @@ default_args = {
 }
 
 dag = DAG(
-    "Process Weather Data",
+    "process_weather_data",
     default_args=default_args,
     start_date=datetime(2025, 1, 1),
     catchup=False,
